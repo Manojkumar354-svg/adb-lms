@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'message.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}"> 
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <h1 class="navbar-brand" href="#">Make Payment</h1>
+        <span class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </span>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href='/checkin'>Book Check In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href='/checkout'>Book Check Out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 form-container">
+                <div class="addBook-glass-container">
+                    <div class="addBook-box">
+                        <form action="/makePayment/{{user_result.studentID}}" method="POST">
+
+                            <p>The Due Amount for {{user_result.studentID}} is {{user_result.due_amount}}</p>
+
+                            <div class="form-group">
+                                <label for="amount">Enter Amount:</label>
+                                <input type="number" class="form-control" id="amount" name="amount" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardName">Card Name:</label>
+                                <input type="text" class="form-control" id="cardName" name="cardName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cardEmail">Email:</label>
+                                <input type="text" class="form-control" id="cardEmail" name="cardEmail" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number:</label>
+                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardCVV">CVV:</label>
+                                <input type="number" class="form-control" id="cardCVV" name="cardCVV" required>
+                            </div>
+
+                            <button type="submit" id="main-button" class="btn btn-danger">Make Payment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+{% endblock %}

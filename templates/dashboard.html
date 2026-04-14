@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'message.html' %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Books Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login-page.css') }}"> 
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <h1 class="navbar-brand" href="#">Books Dashboard</h1>
+        <span class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </span>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href='/bookRequest/{{ user_data._id }}'>Request Book</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href='/bookRenew/{{ user_data._id }}'>Renew Book</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href='/profile/{{ user_data._id }}'>Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5" style="padding-top: 5%;">
+        <div class="container col-md-12">
+            <h5>
+                {{ message }}
+            </h5>
+        </div>
+        <div class="container mt-3">
+            <form id="filterForm">
+                <h5>Filter By:</h5>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="isbnFilter" name="isbn" placeholder="Enter ISBN">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="titleFilter" name="title" placeholder="Enter Title">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="authorFilter" name="author" placeholder="Enter Author">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="genreFilter" name="genre" placeholder="Enter Genre">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-danger mt-1">Filter</button>
+                        <a class="btn btn-danger mt-1" href="/dashboard">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    <section style="padding-bottom: 10%;">
+            <div class="container table-container">
+                <table class="table mt-3">
+                    <thead>
+                        <tr>
+                            <th scope="col">CopyId</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Author</th>
+                            <th scope="col">Genre</th>
+                            <th scope="col">ISBN</th>
+                            <th scope="col">Availability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for copy in copies %}
+                            <tr>
+                                <td> <a style="color: #2075a3;" href="/Copy/{{ copy.CopyId }}">{{ copy.CopyId }}</a></td>
+                                <td>{{ copy.Title }}</td>
+                                <td>{{ copy.Author }}</td>
+                                <td>{{ copy.Genre }}</td>
+                                <td>{{ copy.ISBN }}</td>
+                                <td>{{ copy.Availability }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .pagination a {
+            border-radius: 5px;
+            background-color: transparent;
+            border-color: transparent;
+            color: black;
+            margin: 2px;
+        }
+        .pagination a.active {
+            border-radius: 20px;
+        }
+    </style>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="fixed-bottom">
+        <ul class="pagination justify-content-center">
+            {% if pagination %}
+                {% for page_num in pagination.pages %}
+                    {% if page_num %}
+                        <li class="page-item {% if pagination.page == page_num %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('dashboard', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </nav>
+
+    <script>
+        // Function to filter the table based on input values using AJAX
+        function filterTable() {
+            // Getting input values
+            var isbn = document.getElementById('isbnFilter').value;
+            var title = document.getElementById('titleFilter').value;
+            var author = document.getElementById('authorFilter').value;
+            var genre = document.getElementById('genreFilter').value;
+
+            // Making an AJAX request to the Flask server
+            $.ajax({
+                type: 'POST',
+                url: '/dashboard',
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify({ isbn, title, author, branch, genre }),
+                success: function (data) {
+                    // Update the table with the filtered data
+                    $('.books-table-body').html(data);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // Attaching event listeners to trigger filtering on input change
+        document.getElementById('isbnFilter').addEventListener('input', filterTable);
+        document.getElementById('titleFilter').addEventListener('input', filterTable);
+        document.getElementById('authorFilter').addEventListener('input', filterTable);
+        document.getElementById('genreFilter').addEventListener('input', filterTable);
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+{% endblock %}
